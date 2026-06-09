@@ -96,7 +96,10 @@ export default async function runBob(skillName, files, options = {}) {
   
   // Add file references
   files.forEach(f => args.push(`@${f}`));
-  
+  // Add auth method for CI/CD
+if (process.env.CI || process.env.BOBSHELL_API_KEY) {
+  args.unshift('--auth-method', 'api-key');
+}
   // Step 6: Execute using spawnSync with prompt via stdin
   const result = spawnSync('bob', args, {
     input: prompt,  // Pass prompt via stdin instead of as argument

@@ -22,6 +22,16 @@ jobs:
         with:
           node-version: '20'
       
+      - name: Install Bob Shell
+        run: |
+          # Install Bob Shell CLI
+          npm install -g @ibm/bob-shell
+          
+          # Verify installation
+          bob --version
+        env:
+          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
+      
       - name: Install GitPulse Dependencies
         run: |
           cd gitpulse
@@ -29,9 +39,8 @@ jobs:
       
       - name: Run GitPulse Review
         run: |
-          # Run from root directory, not from inside gitpulse/
           node gitpulse/src/index.js check --ci --output both
         env:
-          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
           CI: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
