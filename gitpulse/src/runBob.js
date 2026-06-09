@@ -81,12 +81,22 @@ export default async function runBob(skillName, files, options = {}) {
   
   // Step 5: Build the command arguments array
   const args = [];
-  
-  // Add optional flags BEFORE positional arguments
-  if (options.yolo) {
-    args.push('--yolo');
-  }
-  
+  const useApiKeyAuth = process.env.CI || process.env.BOBSHELL_API_KEY;
+
+if (useApiKeyAuth) {
+  args.push('--auth-method', 'api-key');
+}
+if (options.yolo && !useApiKeyAuth) {
+  args.push('--yolo');
+}
+//   if (process.env.CI || process.env.BOBSHELL_API_KEY) {
+//   args.push('--auth-method', 'api-key');
+// }
+
+// // Add optional flags BEFORE positional arguments
+// if (options.yolo) {
+//   args.push('--yolo');
+// }
   // Hide intermediary output to get clean JSON/Markdown
   args.push('--hide-intermediary-output');
   
@@ -96,7 +106,10 @@ export default async function runBob(skillName, files, options = {}) {
   
   // Add file references
   files.forEach(f => args.push(`@${f}`));
-  
+  // Add auth method for CI/CD
+if (process.env.CI || process.env.BOBSHELL_API_KEY) {
+  args.unshift('--auth-method', 'api-key');
+}
   // Step 6: Execute using spawnSync with prompt via stdin
   const result = spawnSync('bob', args, {
     input: prompt,  // Pass prompt via stdin instead of as argument

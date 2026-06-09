@@ -14,7 +14,7 @@ import { execSync } from 'child_process';
  * @returns {Promise<string>} - Bob's response
  */
 export async function callBobApi(prompt, files, options = {}) {
-  const apiKey = process.env.BOB_API_KEY;
+  const apiKey = process.env.BOBSHELL_API_KEY || process.env.BOB_API_KEY; // Support both env var names for flexibility
   
   if (!apiKey) {
     throw new Error('BOB_API_KEY environment variable is required for API mode');

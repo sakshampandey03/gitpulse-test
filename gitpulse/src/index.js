@@ -17,7 +17,7 @@ const program = new Command();
  */
 function checkBobInstalled() {
   // Skip check in CI if API key is available (will use API mode)
-  if (process.env.CI && process.env.BOB_API_KEY) {
+  if (process.env.CI && process.env.BOBSHELL_API_KEY) {
     console.log('ℹ️  Running in CI mode with API key - will use Bob API');
     return;
   }
@@ -26,7 +26,7 @@ function checkBobInstalled() {
     execSync('bob --version', { stdio: 'ignore' });
   } catch (error) {
     // If we have an API key, we can still proceed using API mode
-    if (process.env.BOB_API_KEY) {
+    if (process.env.BOBSHELL_API_KEY) {
       console.log('ℹ️  Bob CLI not found, but API key available - will use Bob API');
       return;
     }
@@ -34,7 +34,7 @@ function checkBobInstalled() {
     // No CLI and no API key - cannot proceed
     if (error.code === 'ENOENT' || error.message.includes('command not found')) {
       console.error('\n❌ Bob Shell is not installed or not on PATH.');
-      console.error('Install it from bob.ibm.com or set BOB_API_KEY environment variable.\n');
+      console.error('Install it from bob.ibm.com or set BOBSHELL_API_KEY environment variable.\n');
     } else {
       console.error('\n❌ Error checking Bob Shell installation:', error.message);
     }
