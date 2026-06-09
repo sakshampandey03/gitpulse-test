@@ -29,8 +29,8 @@ jobs:
       
       - name: Run GitPulse Review
         run: |
-          cd gitpulse
-          node src/index.js check --ci --output both
+          # Run from root directory, not from inside gitpulse/
+          node gitpulse/src/index.js check --ci --output both
         env:
           BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
           CI: true
