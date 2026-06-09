@@ -81,15 +81,22 @@ export default async function runBob(skillName, files, options = {}) {
   
   // Step 5: Build the command arguments array
   const args = [];
-  
-  if (process.env.CI || process.env.BOBSHELL_API_KEY) {
+  const useApiKeyAuth = process.env.CI || process.env.BOBSHELL_API_KEY;
+
+if (useApiKeyAuth) {
   args.push('--auth-method', 'api-key');
 }
-
-// Add optional flags BEFORE positional arguments
-if (options.yolo) {
+if (options.yolo && !useApiKeyAuth) {
   args.push('--yolo');
 }
+//   if (process.env.CI || process.env.BOBSHELL_API_KEY) {
+//   args.push('--auth-method', 'api-key');
+// }
+
+// // Add optional flags BEFORE positional arguments
+// if (options.yolo) {
+//   args.push('--yolo');
+// }
   // Hide intermediary output to get clean JSON/Markdown
   args.push('--hide-intermediary-output');
   
