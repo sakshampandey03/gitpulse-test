@@ -1,0 +1,23 @@
+name: GitPulse PR Review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install GitPulse
+        run: cd gitpulse && npm install
+      - name: Run GitPulse
+        run: cd gitpulse && node src/index.js check --ci
+        env:
+          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
