@@ -22,11 +22,14 @@ jobs:
         with:
           node-version: '22'
       
-      - name: Verify Node.js Version
-        run: node --version
-      
       - name: Install Bob Shell
-        run: curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash
+        run: |
+          curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash -s -- --pm npm
+        env:
+          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+      
+      - name: Add Bob to PATH
+        run: echo "$HOME/.bob/bin" >> $GITHUB_PATH
       
       - name: Accept Bob License
         run: bob --accept-license -p "Ready for code analysis"
