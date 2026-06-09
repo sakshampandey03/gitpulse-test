@@ -22,6 +22,19 @@ jobs:
         with:
           node-version: '20'
       
+      - name: Debug - Show changed files
+        run: |
+          echo "=== Changed files ==="
+          git diff origin/main...HEAD --name-only
+          echo "=== Current directory ==="
+          pwd
+          echo "=== Directory contents ==="
+          ls -la
+          echo "=== src/ contents ==="
+          ls -la src/ || echo "No src/ directory"
+          echo "=== .bob/ exists? ==="
+          ls -la .bob/ || echo "No .bob/ directory"
+      
       - name: Install GitPulse Dependencies
         run: |
           cd gitpulse
@@ -29,7 +42,6 @@ jobs:
       
       - name: Run GitPulse Review
         run: |
-          # Run from root directory, not from inside gitpulse/
           node gitpulse/src/index.js check --ci --output both
         env:
           BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
