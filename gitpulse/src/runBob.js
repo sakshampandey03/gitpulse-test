@@ -82,7 +82,7 @@ export default async function runBob(skillName, files, options = {}) {
   // Step 5: Build the command arguments array
   const args = [];
   
-  if (process.env.CI || process.env.BOB_API_KEY) {
+  if (process.env.CI || process.env.BOBSHELL_API_KEY) {
   args.push('--auth-method', 'api-key');
 }
 

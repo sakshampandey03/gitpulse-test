@@ -26,7 +26,7 @@ jobs:
         run: |
           curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash -s -- --pm npm
         env:
-          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
       
       - name: Add Bob to PATH
         run: echo "$HOME/.bob/bin" >> $GITHUB_PATH
@@ -34,12 +34,12 @@ jobs:
       - name: Accept Bob License
         run: bob --accept-license -p "Ready for code analysis"
         env:
-          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
       
       - name: Verify Bob Installation
         run: bob --version
         env:
-          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
       
       - name: Install GitPulse Dependencies
         run: |
@@ -50,6 +50,6 @@ jobs:
         run: |
           node gitpulse/src/index.js check --ci --output both
         env:
-          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
           CI: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
