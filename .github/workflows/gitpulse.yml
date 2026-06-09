@@ -17,10 +17,13 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+      
+      - name: Verify Node.js Version
+        run: node --version
       
       - name: Install Bob Shell
         run: curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash
@@ -47,4 +50,3 @@ jobs:
           BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
           CI: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
