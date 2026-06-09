@@ -13,15 +13,28 @@ const program = new Command();
 
 /**
  * Check if Bob Shell is installed and available on PATH
+ * In CI mode with BOB_API_KEY, skip this check as we'll use API mode
  */
 function checkBobInstalled() {
+  // Skip check in CI if API key is available (will use API mode)
+  if (process.env.CI && process.env.BOB_API_KEY) {
+    console.log('ℹ️  Running in CI mode with API key - will use Bob API');
+    return;
+  }
+  
   try {
     execSync('bob --version', { stdio: 'ignore' });
   } catch (error) {
-    // Distinguish between "not installed" vs "other errors"
+    // If we have an API key, we can still proceed using API mode
+    if (process.env.BOB_API_KEY) {
+      console.log('ℹ️  Bob CLI not found, but API key available - will use Bob API');
+      return;
+    }
+    
+    // No CLI and no API key - cannot proceed
     if (error.code === 'ENOENT' || error.message.includes('command not found')) {
       console.error('\n❌ Bob Shell is not installed or not on PATH.');
-      console.error('Install it from bob.ibm.com and ensure it\'s in your PATH.\n');
+      console.error('Install it from bob.ibm.com or set BOB_API_KEY environment variable.\n');
     } else {
       console.error('\n❌ Error checking Bob Shell installation:', error.message);
     }
@@ -153,10 +166,10 @@ program
       
       console.log(`Running ${check.label} on ${filteredFiles.length} file(s)...`);
       
-      // Step 6: Run Bob skill
+      // Step 6: Run Bob skill (now async)
       let results;
       try {
-        results = runBob(check.skillName, filteredFiles, {
+        results = await runBob(check.skillName, filteredFiles, {
           outputFormat: check.outputFormat,
           yolo: true,  // Auto-approve to get clean output without interactive prompts
           useNativeSkills: options.nativeSkills || false

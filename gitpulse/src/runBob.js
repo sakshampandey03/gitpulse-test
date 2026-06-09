@@ -1,6 +1,7 @@
 import { spawnSync } from 'child_process';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { callBobApi, isBobCliAvailable } from './bobApi.js';
 
 /**
  * Executes a Bob skill with specified files and options.
@@ -33,7 +34,7 @@ import { join } from 'path';
  *   useNativeSkills: true
  * });
  */
-export default function runBob(skillName, files, options = {}) {
+export default async function runBob(skillName, files, options = {}) {
   // Validate skillName parameter to prevent path traversal
   if (!/^[a-z0-9-]+$/.test(skillName)) {
     throw new Error(`Invalid skill name '${skillName}'. Skill names must contain only lowercase letters, numbers, and hyphens.`);
@@ -68,6 +69,14 @@ export default function runBob(skillName, files, options = {}) {
     prompt += '\n\nOutput only valid JSON.';
   } else if (options.outputFormat === 'markdown') {
     prompt += '\n\nOutput only Markdown.';
+  }
+  
+  // Check if Bob CLI is available, if not use API
+  const useCli = isBobCliAvailable();
+  
+  if (!useCli) {
+    console.log('ℹ️  Bob CLI not available, using API mode...');
+    return await runBobViaApi(prompt, files, options);
   }
   
   // Step 5: Build the command arguments array
@@ -137,6 +146,42 @@ export default function runBob(skillName, files, options = {}) {
   
   // Step 9: Return the result
   return stdout;
+}
+
+/**
+ * Run Bob via API when CLI is not available
+ */
+async function runBobViaApi(prompt, files, options) {
+  try {
+    const response = await callBobApi(prompt, files, options);
+    
+    // Process response similar to CLI output
+    let output = response.trim();
+    
+    if (options.outputFormat === 'json') {
+      // Strip markdown code blocks if present
+      if (output.startsWith('```')) {
+        output = output.replace(/^```(?:json)?\s*\n/, '');
+        output = output.replace(/\n```\s*$/, '');
+        output = output.trim();
+      }
+      
+      try {
+        return JSON.parse(output);
+      } catch (parseError) {
+        const truncatedOutput = output.length > 500
+          ? output.substring(0, 500) + '...'
+          : output;
+        throw new Error(
+          `Failed to parse JSON output from API: ${parseError.message}\n\nRaw output:\n${truncatedOutput}`
+        );
+      }
+    }
+    
+    return output;
+  } catch (error) {
+    throw new Error(`Bob API error: ${error.message}`);
+  }
 }
 
 // Made with Bob

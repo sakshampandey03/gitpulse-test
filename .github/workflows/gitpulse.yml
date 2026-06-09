@@ -15,26 +15,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all history for git diff
+          fetch-depth: 0
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      
-      # NEW: Install Bob Shell
-      - name: Install Bob Shell
-        run: |
-          curl -fsSL https://bob.ibm.com/install.sh | bash
-          echo "$HOME/.bob/bin" >> $GITHUB_PATH
-        env:
-          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
-      
-      # Verify Bob is installed
-      - name: Verify Bob Installation
-        run: |
-          bob --version
-          echo "Bob Shell installed successfully"
       
       - name: Install GitPulse Dependencies
         run: |
@@ -47,4 +33,5 @@ jobs:
           node src/index.js check --ci --output both
         env:
           BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+          CI: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
