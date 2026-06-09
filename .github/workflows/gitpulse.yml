@@ -1,3 +1,6 @@
+cd ~/Documents/gitpulse-test
+
+cat > .github/workflows/gitpulse.yml << 'EOF'
 name: GitPulse PR Review
 
 on:
@@ -23,14 +26,17 @@ jobs:
           node-version: '20'
       
       - name: Install Bob Shell
-        run: |
-          # Install Bob Shell CLI
-          npm install -g @ibm/bob-shell
-          
-          # Verify installation
-          bob --version
+        run: curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash
+      
+      - name: Accept Bob License
+        run: bob --accept-license -p "Ready for code analysis"
         env:
-          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
+          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+      
+      - name: Verify Bob Installation
+        run: bob --version
+        env:
+          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
       
       - name: Install GitPulse Dependencies
         run: |
@@ -41,6 +47,7 @@ jobs:
         run: |
           node gitpulse/src/index.js check --ci --output both
         env:
-          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
+          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
           CI: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+EOF
