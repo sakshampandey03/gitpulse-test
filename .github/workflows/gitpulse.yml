@@ -17,10 +17,29 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+      
+      - name: Install Bob Shell
+        run: |
+          curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash -s -- --pm npm
+        env:
+          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
+      
+      - name: Add Bob to PATH
+        run: echo "$HOME/.bob/bin" >> $GITHUB_PATH
+      
+      - name: Accept Bob License
+        run: bob --accept-license -p "Ready for code analysis"
+        env:
+          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
+      
+      - name: Verify Bob Installation
+        run: bob --version
+        env:
+          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
       
       - name: Install GitPulse Dependencies
         run: |
@@ -29,9 +48,8 @@ jobs:
       
       - name: Run GitPulse Review
         run: |
-          # Run from root directory, not from inside gitpulse/
           node gitpulse/src/index.js check --ci --output both
         env:
-          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+          BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
           CI: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
