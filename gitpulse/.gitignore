@@ -1,0 +1,5 @@
+node_modules/
+gitpulse-reports/
+.env
+*.log
+.DS_Store

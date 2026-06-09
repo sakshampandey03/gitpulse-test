@@ -1,23 +1,50 @@
 name: GitPulse PR Review
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   review:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
+    
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
+          fetch-depth: 0  # Fetch all history for git diff
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install GitPulse
-        run: cd gitpulse && npm install
-      - name: Run GitPulse
-        run: cd gitpulse && node src/index.js check --ci
+      
+      # NEW: Install Bob Shell
+      - name: Install Bob Shell
+        run: |
+          curl -fsSL https://bob.ibm.com/install.sh | bash
+          echo "$HOME/.bob/bin" >> $GITHUB_PATH
         env:
           BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+      
+      # Verify Bob is installed
+      - name: Verify Bob Installation
+        run: |
+          bob --version
+          echo "Bob Shell installed successfully"
+      
+      - name: Install GitPulse Dependencies
+        run: |
+          cd gitpulse
+          npm install
+      
+      - name: Run GitPulse Review
+        run: |
+          cd gitpulse
+          node src/index.js check --ci --output both
+        env:
+          BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
