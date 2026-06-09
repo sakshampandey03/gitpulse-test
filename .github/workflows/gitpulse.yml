@@ -1,6 +1,3 @@
-cd ~/Documents/gitpulse-test
-
-cat > .github/workflows/gitpulse.yml << 'EOF'
 name: GitPulse PR Review
 
 on:
@@ -50,4 +47,4 @@ jobs:
           BOB_API_KEY: ${{ secrets.BOB_API_KEY }}
           CI: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-EOF
+
