@@ -81,11 +81,16 @@ export default async function runBob(skillName, files, options = {}) {
   
   // Step 5: Build the command arguments array
   const args = [];
-  const useApiKeyAuth = process.env.CI || process.env.BOBSHELL_API_KEY;
+  
+// Add auth method for CI/CD environments
+const useApiKeyAuth = process.env.CI || process.env.BOBSHELL_API_KEY;
 
 if (useApiKeyAuth) {
   args.push('--auth-method', 'api-key');
 }
+
+// Add optional flags BEFORE positional arguments
+// Don't use --yolo with API key auth (they conflict)
 if (options.yolo && !useApiKeyAuth) {
   args.push('--yolo');
 }
