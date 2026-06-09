@@ -1,0 +1,31 @@
+name: GitPulse PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  gitpulse-review:
+    runs-on: ubuntu-latest
+    name: Run GitPulse Code Review
+    
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for proper diff analysis
+      
+      - name: Run GitPulse Review
+        uses: your-org/gitpulse-action@v1
+        with:
+          bob_api_key: ${{ secrets.BOB_API_KEY }}
+          checks: 'security-scan,solid-check,bug-detector,perf-analyzer,test-generator'
+          fail_on: 'critical'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# Made with Bob

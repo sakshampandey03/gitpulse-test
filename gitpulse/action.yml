@@ -1,0 +1,30 @@
+name: 'GitPulse — Bob-powered PR Review'
+description: 'Automatically reviews PRs using IBM Bob Shell'
+author: 'GitPulse'
+
+inputs:
+  bob_api_key:
+    description: 'IBM Bob API key (from bob.ibm.com/account)'
+    required: true
+  github_token:
+    description: 'GitHub token for posting PR comments'
+    required: false
+    default: ${{ github.token }}
+  checks:
+    description: 'Comma-separated list of checks to run'
+    required: false
+    default: 'security-scan,solid-check,bug-detector,perf-analyzer,test-generator'
+  fail_on:
+    description: 'Fail the check if findings at this severity or above are found'
+    required: false
+    default: 'critical'
+
+runs:
+  using: 'node20'
+  main: 'action-runner.js'
+
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+# Made with Bob
